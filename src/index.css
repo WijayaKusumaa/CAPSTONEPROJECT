@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  ::selection {
+    @apply bg-brand-200 text-brand-900;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500/60 ring-offset-2 ring-offset-canvas;
+  }
+}
+
+@layer components {
+  /* ---------- Surface ---------- */
+  .card {
+    @apply rounded-2xl border border-line bg-white shadow-card;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-150 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-brand-600 text-white shadow-sm hover:bg-brand-700;
+  }
+  .btn-secondary {
+    @apply border border-line bg-white text-ink hover:border-stone-300 hover:bg-stone-50;
+  }
+  .btn-ghost {
+    @apply text-ink-soft hover:bg-stone-100 hover:text-ink;
+  }
+  .btn-danger {
+    @apply bg-rose-600 text-white hover:bg-rose-700;
+  }
+  .btn-icon {
+    @apply !p-2;
+  }
+
+  /* ---------- Form ---------- */
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+  .input {
+    @apply w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-mute transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15;
+  }
+  .input-error {
+    @apply border-rose-400 focus:border-rose-500 focus:ring-rose-500/15;
+  }
+
+  /* ---------- Badge ---------- */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset;
+  }
+}
+
+/* =====================================================================
+   FullCalendar — disesuaikan dengan design system
+   ===================================================================== */
+.fc {
+  --fc-border-color: #ece9e3;
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: #f7f6f3;
+  --fc-today-bg-color: rgb(47 159 138 / 0.08);
+  --fc-list-event-hover-bg-color: #f7f6f3;
+  --fc-event-border-color: transparent;
+  font-family: inherit;
+}
+
+.fc .fc-toolbar {
+  @apply mb-5 flex-wrap gap-3;
+}
+.fc .fc-toolbar-title {
+  @apply text-lg font-bold tracking-tight text-ink;
+}
+.fc .fc-button {
+  @apply rounded-xl border border-line bg-white px-3 py-1.5 text-sm font-semibold capitalize text-ink-soft shadow-none transition;
+}
+.fc .fc-button:hover {
+  @apply border-stone-300 bg-stone-50 text-ink;
+}
+.fc .fc-button:focus {
+  box-shadow: none;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  @apply border-brand-600 bg-brand-600 text-white;
+}
+.fc .fc-button-group > .fc-button:not(:first-child) {
+  @apply -ml-px;
+}
+.fc .fc-col-header-cell-cushion {
+  @apply py-2.5 text-xs font-semibold uppercase tracking-wider text-ink-mute no-underline;
+}
+.fc .fc-daygrid-day-number {
+  @apply p-2 text-xs font-medium text-ink-soft no-underline;
+}
+.fc .fc-day-today .fc-daygrid-day-number {
+  @apply font-bold text-brand-700;
+}
+.fc .fc-scrollgrid {
+  @apply overflow-hidden rounded-xl border-line;
+}
+.fc .fc-list-day-cushion {
+  @apply bg-canvas text-sm font-semibold text-ink;
+}
+.fc .fc-list-event-title {
+  @apply text-sm font-medium;
+}
+.fc .fc-list-empty {
+  @apply bg-transparent text-ink-mute;
+}
+
+/* Event tugas — warna mengikuti level prioritas */
+.task-event {
+  @apply cursor-pointer rounded-md px-1 py-px text-xs font-medium;
+  border: 1px solid var(--fc-event-border-color);
+}
+.task-event--critical {
+  --fc-event-bg-color: #ffe4e6;
+  --fc-event-border-color: #fb7185;
+  --fc-event-text-color: #9f1239;
+}
+.task-event--high {
+  --fc-event-bg-color: #ffedd5;
+  --fc-event-border-color: #fb923c;
+  --fc-event-text-color: #9a3412;
+}
+.task-event--medium {
+  --fc-event-bg-color: #fef3c7;
+  --fc-event-border-color: #fbbf24;
+  --fc-event-text-color: #92400e;
+}
+.task-event--low {
+  --fc-event-bg-color: #e7f4f1;
+  --fc-event-border-color: #4fbca6;
+  --fc-event-text-color: #1d5249;
+}
+.task-event--done {
+  --fc-event-bg-color: #f1f0ec;
+  --fc-event-border-color: #d6d3cc;
+  --fc-event-text-color: #8a919c;
+  @apply line-through;
+}
