@@ -82,47 +82,57 @@ Aplikasi web untuk membantu mahasiswa mengelola dan memprioritaskan tugas-tugas 
 
 ## Logika Penghitungan Prioritas
 
-Skor prioritas dihitung dalam skala 0–100 berdasarkan formula:
+Skor prioritas dihitung menggunakan metode **Simple Additive Weighting (SAW)** dalam skala 20–100 berdasarkan formula (Bab 2.6 Laporan Kemajuan Capstone Project STSI4440):
 
-$$\text{Skor} = (0.65 \times \text{Urgensi} + 0.35 \times \text{Kesulitan}) \times \text{Pengali Status}$$
+$$P = (0,6 \times U) + (0,4 \times K)$$
 
-- **Urgensi (0–100)**: Dihitung dari sisa hari menuju deadline dengan fungsi peluruhan eksponensial. Tugas yang jatuh tempo hari ini atau terlambat bernilai 100.
-- **Kesulitan (20–100)**: Dihitung secara proporsional dari skala bobot 1 hingga 5.
-- **Pengali Status**: Belum dikerjakan (1.0), Sedang dikerjakan (0.85), Selesai (0).
+- **Skor Urgensi ($U$) — Tabel 2.2**:
+  - Lebih dari 14 hari: **$20$**
+  - 8–14 hari: **$40$**
+  - 4–7 hari: **$60$**
+  - 2–3 hari (mencakup H-3): **$80$**
+  - 0–1 hari (mencakup H-1 dan hari H): **$100$**
+  - Deadline terlewat ($< 0$ hari): **$100$** *(ditandai terlambat)*
+- **Skor Kesulitan ($K$) — Rumus 2.2**:
+  $$K = (D / 5) \times 100$$
+  dengan $D \in \{1, 2, 3, 4, 5\}$ menghasilkan $K \in \{20, 40, 60, 80, 100\}$.
+- **Aturan Pengurutan & Seri**:
+  - Tugas aktif (`belum` dan `sedang`) ditempatkan di atas tugas `selesai`.
+  - Diurutkan dari skor prioritas $P$ tertinggi ke terendah.
+  - Jika skor sama (seri), tugas dengan deadline lebih dekat ditempatkan lebih dahulu, lalu tingkat kesulitan lebih tinggi.
 
 Level prioritas:
 - **Kritis**: Skor $\ge 75$
-- **Tinggi**: Skor $\ge 55$
-- **Sedang**: Skor $\ge 35$
-- **Rendah**: Skor $< 35$
+- **Tinggi**: Skor $\ge 60$
+- **Sedang**: Skor $\ge 40$
+- **Rendah**: Skor $< 40$
 
 ---
 
-## Notifikasi Browser
+## Pengingat Deadline & Notifikasi
 
-Pengingat tenggat waktu dapat diaktifkan melalui ikon lonceng pada header navigasi.
+Pengingat tenggat waktu dapat dipantau melalui ikon lonceng pada header navigasi maupun toast di dalam aplikasi.
 
 **Perilaku:**
-- Menggunakan aturan pengingat tenggat waktu (H-3, H-1, dan hari H) dengan kunci deduplikasi unik agar satu tugas tidak memicu notifikasi berulang.
-- Notifikasi desktop hanya dikirimkan saat tab aplikasi sedang berada di latar belakang (*hidden*). Jika tab sedang aktif dilihat, notifikasi cukup ditampilkan melalui toast di dalam aplikasi.
-- Tugas yang sudah berstatus selesai atau tanggal tenggatnya telah terlewat tidak akan dinotifikasi.
-- Sistem membatasi maksimal 3 notifikasi sekaligus untuk menghindari penumpukan di layar pengguna.
+- Menggunakan aturan tiga tahap pengingat tenggat waktu (**H-3, H-1, dan hari H**) dengan pencatatan kunci unik dan waktu notifikasi (`timestamp`) agar pengingat yang sama tidak muncul berulang.
+- Panel ikon lonceng menampilkan **daftar pengingat deadline aktif** di dalam aplikasi beserta pengaturan opsional notifikasi desktop browser.
+- Tugas yang sudah berstatus selesai tidak menampilkan pengingat aktif.
 
 ---
 
 ## Format File CSV
 
-Untuk mengimpor tugas melalui file spreadsheet CSV, gunakan format kolom berikut:
+Untuk mengimpor tugas melalui file spreadsheet CSV (Bab 2.9), gunakan format kolom berikut:
 
 ```csv
-kode_mata_kuliah,nama_tugas,tanggal_mulai,tanggal_deadline,bobot
-STSI4105,Laporan Praktikum Basis Data,2026-10-05,2026-10-14,4
-STSI4310,Resume Jurnal Metodologi Penelitian,2026-10-08,2026-10-12,2
+kode_mk,nama_tugas,tanggal_mulai,deadline,kesulitan,status
+STSI4440,Proposal Capstone,2026-10-15,2026-10-25,4,Belum
+STSI4409,Tugas Metadata,2026-10-16,2026-10-22,3,Sedang
 ```
 
 - Format tanggal yang didukung: `YYYY-MM-DD` atau `DD/MM/YYYY`.
-- Bobot: Angka bulat 1 sampai 5.
-- Kolom status bersifat opsional (`belum`, `sedang`, `selesai`).
+- Tingkat kesulitan (`kesulitan`): Angka bulat 1 sampai 5.
+- Status (`status`): `Belum`, `Sedang`, atau `Selesai` (baris dengan status tidak valid akan ditolak dan ditandai).
 
 ---
 

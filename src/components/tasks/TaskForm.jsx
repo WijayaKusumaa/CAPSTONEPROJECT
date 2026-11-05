@@ -126,7 +126,7 @@ export default function TaskForm({ initial, onSubmit, onCancel }) {
       </div>
 
       <fieldset>
-        <legend className="label">Bobot / kesulitan</legend>
+        <legend className="label">Tingkat kesulitan (1–5)</legend>
         <div className="grid grid-cols-5 gap-2">
           {WEIGHT_OPTIONS.map(({ value, label }) => {
             const active = Number(values.weight) === value

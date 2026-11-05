@@ -1,32 +1,31 @@
-import { STATUS } from './constants'
 import { parseFlexibleDate } from './dates'
-import { normalizeTaskInput, validateTask } from './validation'
+import { normalizeTaskInput, parseStatusValue, validateTask } from './validation'
 
-// Template CSV untuk diunduh pengguna
+// Template CSV sesuai Bab 2.9 Laporan Kemajuan Capstone Project STSI4440
 export const CSV_TEMPLATE = [
-  'kode_mata_kuliah,nama_tugas,tanggal_mulai,tanggal_deadline,bobot',
-  'IF2101,Laporan Praktikum Basis Data,2026-10-05,2026-10-14,4',
-  'MK1102,Resume Jurnal Metodologi,2026-10-08,2026-10-12,2',
+  'kode_mk,nama_tugas,tanggal_mulai,deadline,kesulitan,status',
+  'STSI4440,Proposal Capstone,2026-10-15,2026-10-25,4,Belum',
+  'STSI4409,Tugas Metadata,2026-10-16,2026-10-22,3,Sedang',
 ].join('\n')
 
-// Variasi nama kolom yang dapat dikenali
+// Variasi nama kolom yang dapat dikenali (mendukung format resmi kode_mk maupun kode_mata_kuliah)
 const HEADER_ALIASES = {
-  courseCode: ['kode_mata_kuliah', 'kode_mk', 'kode_matkul', 'kode', 'matkul', 'course_code', 'course'],
+  courseCode: ['kode_mk', 'kode_mata_kuliah', 'kode_matkul', 'kode', 'matkul', 'course_code', 'course'],
   title: ['nama_tugas', 'tugas', 'nama', 'judul', 'title', 'task'],
   startDate: ['tanggal_mulai', 'tgl_mulai', 'mulai', 'start_date', 'start'],
-  deadline: ['tanggal_deadline', 'tgl_deadline', 'deadline', 'tenggat', 'due_date', 'due'],
-  weight: ['bobot', 'kesulitan', 'bobot_kesulitan', 'weight'],
+  deadline: ['deadline', 'tanggal_deadline', 'tgl_deadline', 'tenggat', 'due_date', 'due'],
+  weight: ['kesulitan', 'tingkat_kesulitan', 'bobot', 'bobot_kesulitan', 'weight'],
   status: ['status'],
 }
 
 const REQUIRED_FIELDS = ['courseCode', 'title', 'startDate', 'deadline', 'weight']
 
 const FIELD_LABEL = {
-  courseCode: 'kode_mata_kuliah',
+  courseCode: 'kode_mk',
   title: 'nama_tugas',
   startDate: 'tanggal_mulai',
-  deadline: 'tanggal_deadline',
-  weight: 'bobot',
+  deadline: 'deadline',
+  weight: 'kesulitan',
 }
 
 const normalizeHeader = (header) =>
@@ -99,8 +98,7 @@ function mapColumns(headerRow) {
 }
 
 function parseStatus(value) {
-  const text = String(value ?? '').trim().toLowerCase()
-  return Object.values(STATUS).includes(text) ? text : STATUS.BELUM
+  return parseStatusValue(value) ?? value
 }
 
 // Parse dan validasi seluruh isi baris data dari file CSV
@@ -124,16 +122,17 @@ export function parseTasksCsv(text) {
     const cell = (field) => (columns[field] === undefined ? '' : (cells[columns[field]] ?? '').trim())
 
     const rawDates = { startDate: cell('startDate'), deadline: cell('deadline') }
+    const rawStatus = cell('status')
     const task = normalizeTaskInput({
       courseCode: cell('courseCode'),
       title: cell('title'),
       startDate: parseFlexibleDate(rawDates.startDate) ?? rawDates.startDate,
       deadline: parseFlexibleDate(rawDates.deadline) ?? rawDates.deadline,
       weight: cell('weight'),
-      status: parseStatus(cell('status')),
+      status: parseStatus(rawStatus),
     })
 
-    const errors = validateTask(task)
+    const errors = validateTask({ ...task, rawStatus })
     const messages = Object.values(errors)
     if (messages.length) result.errors.push({ row: i + 2, messages })
     else result.valid.push(task)

@@ -57,9 +57,16 @@ describe('validateTask', () => {
     expect(errors.deadline).toBe('Deadline tidak boleh sebelum tanggal mulai.')
   })
 
-  it('memvalidasi rentang bobot harus bilangan bulat 1 sampai 5', () => {
+  it('memvalidasi rentang tingkat kesulitan harus bilangan bulat 1 sampai 5', () => {
     expect(validateTask({ ...validTask, weight: 0 }).weight).toBeDefined()
     expect(validateTask({ ...validTask, weight: 6 }).weight).toBeDefined()
     expect(validateTask({ ...validTask, weight: 3.5 }).weight).toBeDefined()
+  })
+
+  it('menolak nilai status yang tidak termasuk Belum, Sedang, atau Selesai', () => {
+    expect(validateTask({ ...validTask, rawStatus: 'Pending' }).status).toBeDefined()
+    expect(validateTask({ ...validTask, rawStatus: 'Belum' }).status).toBeUndefined()
+    expect(validateTask({ ...validTask, rawStatus: 'Sedang' }).status).toBeUndefined()
+    expect(validateTask({ ...validTask, rawStatus: 'Selesai' }).status).toBeUndefined()
   })
 })

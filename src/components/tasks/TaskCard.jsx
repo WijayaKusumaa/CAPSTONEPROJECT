@@ -16,14 +16,14 @@ import StatusToggle from './StatusToggle'
 function WeightMeter({ weight }) {
   const label = WEIGHT_OPTIONS.find((o) => o.value === weight)?.label
   return (
-    <span className="inline-flex items-center gap-1.5" title={`Bobot ${weight}/${MAX_WEIGHT} · ${label}`}>
+    <span className="inline-flex items-center gap-1.5" title={`Tingkat kesulitan ${weight}/${MAX_WEIGHT} · ${label}`}>
       <Weight className="h-3.5 w-3.5" />
       <span className="flex gap-0.5" aria-hidden="true">
         {Array.from({ length: MAX_WEIGHT }, (_, i) => (
           <span key={i} className={clsx('h-1.5 w-3 rounded-full', i < weight ? 'bg-ink-soft' : 'bg-stone-200')} />
         ))}
       </span>
-      <span className="sr-only">{`Bobot ${weight} dari ${MAX_WEIGHT}`}</span>
+      <span className="sr-only">{`Tingkat kesulitan ${weight} dari ${MAX_WEIGHT}`}</span>
     </span>
   )
 }
@@ -70,7 +70,7 @@ export default function TaskCard({ task, highlightTerms = [] }) {
       <div className="flex flex-col gap-4 p-5 pl-6 lg:flex-row lg:items-center lg:gap-6">
         <div
           className={clsx('hidden h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl lg:flex', styles.score)}
-          title="Skor prioritas"
+          title={`Rumus Prioritas SAW: ${priority.formula ?? `P = ${priority.score}`}`}
         >
           <span className="text-lg font-extrabold leading-none tabular-nums">{Math.round(priority.score)}</span>
           <span className="mt-1 text-[9px] font-semibold uppercase tracking-wider opacity-70">skor</span>
@@ -87,6 +87,11 @@ export default function TaskCard({ task, highlightTerms = [] }) {
               </span>
             )}
             <PriorityBadge level={priority.level} />
+            {priority.overdue && (
+              <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white">
+                Terlambat
+              </span>
+            )}
             <span className="ml-auto text-xs font-bold tabular-nums lg:hidden">Skor {Math.round(priority.score)}</span>
           </div>
 
@@ -105,6 +110,12 @@ export default function TaskCard({ task, highlightTerms = [] }) {
               </span>
             )}
             <WeightMeter weight={task.weight} />
+            <span
+              className="rounded bg-stone-100 px-1.5 py-0.5 text-[11px] font-medium text-ink-mute tabular-nums"
+              title={`Perhitungan manual: P = ${priority.formula}`}
+            >
+              U:{priority.urgency} · K:{priority.difficulty}
+            </span>
 
             {/* Progres Subtugas */}
             {subTotal > 0 && (

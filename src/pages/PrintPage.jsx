@@ -43,7 +43,7 @@ export default function PrintPage({ onBack }) {
                   <th className="px-2 py-2.5 font-bold">Nama Tugas</th>
                   <th className="px-2 py-2.5 font-bold">Mulai</th>
                   <th className="px-2 py-2.5 font-bold">Deadline</th>
-                  <th className="px-2 py-2.5 text-center font-bold">Bobot</th>
+                  <th className="px-2 py-2.5 text-center font-bold">Kesulitan</th>
                   <th className="py-2.5 pl-2 font-bold">Status</th>
                 </tr>
               </thead>

@@ -10,9 +10,9 @@ function escapeCsvCell(value) {
   return str
 }
 
-// Konversi daftar tugas ke CSV dengan format identik dengan import + status
+// Konversi daftar tugas ke CSV dengan format standar Bab 2.9 Tugas 2
 export function tasksToCsv(tasks) {
-  const headers = ['kode_mata_kuliah', 'nama_tugas', 'tanggal_mulai', 'tanggal_deadline', 'bobot', 'status']
+  const headers = ['kode_mk', 'nama_tugas', 'tanggal_mulai', 'deadline', 'kesulitan', 'status']
   const rows = [headers.join(',')]
 
   for (const task of tasks) {

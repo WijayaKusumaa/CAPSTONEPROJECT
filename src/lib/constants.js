@@ -1,4 +1,4 @@
-// Konstanta untuk opsi status, bobot, dan level prioritas
+// Konstanta untuk opsi status, tingkat kesulitan, dan level prioritas
 
 export const STATUS = Object.freeze({
   BELUM: 'belum',
@@ -13,11 +13,11 @@ export const STATUS_OPTIONS = [
 ]
 
 export const WEIGHT_OPTIONS = [
-  { value: 1, label: 'Ringan' },
-  { value: 2, label: 'Cukup' },
+  { value: 1, label: 'Sangat mudah' },
+  { value: 2, label: 'Mudah' },
   { value: 3, label: 'Sedang' },
-  { value: 4, label: 'Berat' },
-  { value: 5, label: 'Sangat berat' },
+  { value: 4, label: 'Sulit' },
+  { value: 5, label: 'Sangat sulit' },
 ]
 
 export const MIN_WEIGHT = 1

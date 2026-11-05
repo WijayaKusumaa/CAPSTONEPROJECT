@@ -6,11 +6,15 @@ import { normalizeTaskInput } from '../lib/validation'
 const createId = () =>
   globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`
 
-const buildTask = (input) => ({
-  ...normalizeTaskInput(input),
-  id: createId(),
-  createdAt: new Date().toISOString(),
-})
+const buildTask = (input) => {
+  const now = new Date().toISOString()
+  return {
+    ...normalizeTaskInput(input),
+    id: createId(),
+    createdAt: now,
+    updatedAt: now,
+  }
+}
 
 // Store data tugas dan riwayat notifikasi (tersimpan di localStorage)
 export const useTaskStore = create()(
@@ -25,19 +29,29 @@ export const useTaskStore = create()(
 
       updateTask: (id, patch) =>
         set((s) => ({
-          tasks: s.tasks.map((t) => (t.id === id ? syncStatusWithSubtasks({ ...t, ...normalizeTaskInput({ ...t, ...patch }) }) : t)),
+          tasks: s.tasks.map((t) =>
+            t.id === id
+              ? {
+                  ...syncStatusWithSubtasks({ ...t, ...normalizeTaskInput({ ...t, ...patch }) }),
+                  updatedAt: new Date().toISOString(),
+                }
+              : t,
+          ),
         })),
 
       setStatus: (id, status) =>
-        set((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...t, status } : t)) })),
+        set((s) => ({
+          tasks: s.tasks.map((t) => (t.id === id ? { ...t, status, updatedAt: new Date().toISOString() } : t)),
+        })),
 
       removeTask: (id) => set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) })),
 
       clearTasks: () => set({ tasks: [], notified: {} }),
 
-      markNotified: (keys) =>
+      // Catat kunci pengingat beserta waktu notifikasi ditampilkan (sesuai Bab 3.3.3 Tugas 2)
+      markNotified: (keys, timestamp = new Date().toISOString()) =>
         set((s) => ({
-          notified: keys.reduce((acc, key) => ({ ...acc, [key]: true }), s.notified),
+          notified: keys.reduce((acc, key) => ({ ...acc, [key]: timestamp }), s.notified),
         })),
 
       // Aksi manipulasi subtugas
@@ -53,6 +67,7 @@ export const useTaskStore = create()(
             const updated = {
               ...t,
               subtasks: [...currentSubtasks, { id: createSubtaskId(), title: cleanTitle, done: false }],
+              updatedAt: new Date().toISOString(),
             }
             return syncStatusWithSubtasks(updated)
           }),
@@ -66,6 +81,7 @@ export const useTaskStore = create()(
             const updated = {
               ...t,
               subtasks: currentSubtasks.map((st) => (st.id === subId ? { ...st, done: !st.done } : st)),
+              updatedAt: new Date().toISOString(),
             }
             return syncStatusWithSubtasks(updated)
           }),
@@ -79,6 +95,7 @@ export const useTaskStore = create()(
             const updated = {
               ...t,
               subtasks: currentSubtasks.filter((st) => st.id !== subId),
+              updatedAt: new Date().toISOString(),
             }
             return syncStatusWithSubtasks(updated)
           }),
@@ -94,6 +111,7 @@ export const useTaskStore = create()(
             const updated = {
               ...t,
               subtasks: currentSubtasks.map((st) => (st.id === subId ? { ...st, title: cleanTitle } : st)),
+              updatedAt: new Date().toISOString(),
             }
             return syncStatusWithSubtasks(updated)
           }),

@@ -26,7 +26,7 @@ describe('export.js', () => {
     it('menghasilkan CSV ber-BOM UTF-8 dengan header lengkap', () => {
       const csv = tasksToCsv(sampleTasks)
       expect(csv.startsWith('\uFEFF')).toBe(true)
-      expect(csv).toContain('kode_mata_kuliah,nama_tugas,tanggal_mulai,tanggal_deadline,bobot,status')
+      expect(csv).toContain('kode_mk,nama_tugas,tanggal_mulai,deadline,kesulitan,status')
       expect(csv.endsWith('\n')).toBe(true)
     })
 
@@ -65,7 +65,7 @@ describe('export.js', () => {
 
     it('menangani daftar kosong hanya dengan header', () => {
       const csv = tasksToCsv([])
-      expect(csv).toBe('\uFEFFkode_mata_kuliah,nama_tugas,tanggal_mulai,tanggal_deadline,bobot,status\n')
+      expect(csv).toBe('\uFEFFkode_mk,nama_tugas,tanggal_mulai,deadline,kesulitan,status\n')
     })
   })
 
