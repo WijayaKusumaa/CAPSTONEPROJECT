@@ -28,6 +28,5 @@ Thumbs.db
 *.sln
 *.sw?
 
-# Dokumentasi Internal / Presentasi Kelompok (hanya lokal)
-DOKUMENTASI_AUDIT_DAN_PRESENTASI*
-public/DOKUMENTASI_AUDIT_DAN_PRESENTASI*
+# Catatan Internal / Presentasi Kelompok (hanya lokal di laptop, jangan ke github)
+CATATAN_DAN_PANDUAN_PRESENTASI*
