@@ -27,3 +27,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Dokumentasi Internal / Presentasi Kelompok (hanya lokal)
+DOKUMENTASI_AUDIT_DAN_PRESENTASI*
+public/DOKUMENTASI_AUDIT_DAN_PRESENTASI*
