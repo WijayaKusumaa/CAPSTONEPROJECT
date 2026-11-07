@@ -21,12 +21,26 @@ Aplikasi web untuk membantu mahasiswa mengelola dan memprioritaskan tugas-tugas 
 
 ## Teknologi yang Digunakan
 
-- **React 18 & Vite**: Framework antarmuka dan build tool modern.
-- **Tailwind CSS**: Desain utilitas yang terstruktur dan responsif.
-- **Zustand**: Manajemen *state* untuk data tugas, preferensi pengaturan, dan notifikasi.
-- **FullCalendar**: Komponen kalender jadwal pengerjaan tugas.
-- **Lucide React**: Kumpulan ikon antarmuka modern.
-- **Vitest**: Unit testing untuk pengujian logika prioritas, validasi, penanggalan, parser CSV, ekspor, pencarian, dan subtugas.
+Aplikasi **TugasKu** dibangun menggunakan arsitektur modern *Single Page Application* (SPA) berbasis web di sisi klien (*client-side*):
+
+- **React 18 & Vite**: Framework UI berbasis komponen modern untuk rendering cepat dan build bundling efisien.
+- **Tailwind CSS**: Framework styling utilitas untuk antarmuka yang bersih, responsif di ponsel dan desktop, serta ramah pengguna.
+- **Zustand & Web Storage API (`localStorage`)**: State management reaktif yang tersinkronisasi otomatis ke memori lokal peramban tanpa memerlukan backend database server.
+- **FullCalendar (`@fullcalendar/react`)**: Komponen kalender interaktif untuk visualisasi rentang pengerjaan tugas dari tanggal mulai hingga deadline.
+- **Lucide React**: Paket ikon antarmuka grafis yang konsisten.
+- **Vitest**: Framework pengujian unit (*automated unit testing*) dengan total 102 kasus uji yang lulus 100%.
+
+### Ringkasan Arsitektur Teknologi untuk Poster / Presentasi
+
+| Komponen Sistem | Teknologi yang Digunakan | Peran dalam Sistem |
+| :--- | :--- | :--- |
+| **Frontend UI** | React 18, Tailwind CSS | Antarmuka pengguna responsif (Dashboard, Kalender, Form) |
+| **Build Tool** | Vite 5 | Pengembangan cepat & kompilasi produksi efisien |
+| **State & Penyimpanan** | Zustand + `localStorage` | Menyimpan data tugas & riwayat notifikasi di browser tanpa server |
+| **Visualisasi Kalender** | FullCalendar v6 | Tampilan jadwal rentang waktu tugas secara visual |
+| **Metode Prioritas** | Simple Additive Weighting (SAW) | Menghitung urutan tugas objektif: $P = (0,6 \times U) + (0,4 \times K)$ |
+| **Pengujian (Testing)** | Vitest (102 Automated Tests) | Memvalidasi rumus prioritas, validasi input, parser CSV, dan pengingat |
+| **Deployment CI/CD** | GitHub Pages & GitHub Actions | Hosting otomatis dan pengujian pipa rilis secara online |
 
 ## Struktur Folder
 
@@ -159,7 +173,7 @@ STSI4409,Tugas Metadata,2026-10-16,2026-10-22,3,Sedang
 ## Panduan Pengujian / QA (Quality Assurance)
 
 ### 1. Menjalankan Automated Unit Tests
-Seluruh unit test mencakup 11 berkas pengujian dengan total 97 pengujian unit otomatis:
+Seluruh unit test mencakup 11 berkas pengujian dengan total 102 pengujian unit otomatis yang lulus 100%:
 ```bash
 # Menjalankan seluruh test suite sekali jalan
 npm test
