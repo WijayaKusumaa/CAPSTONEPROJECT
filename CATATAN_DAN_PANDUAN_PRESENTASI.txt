@@ -1,0 +1,227 @@
+CATATAN DAN PANDUAN PRIBADI PROJEK TUGASKU
+Capstone Project STSI4440 - Sistem Informasi Universitas Terbuka
+Kelompok C (Tahun 2026)
+
+Halo teman-teman kelompok C!
+Catatan ini sengaja saya buat sendiri buat pegangan kita bareng-bareng. Isinya rangkuman lengkap cara kerja aplikasi web "TugasKu" yang sudah saya selesaikan, alasan kenapa kodenya dibuat seperti itu, contekan buat bahan slide PPT, sampai contekan jawaban kalau nanti dosen penguji nanya-nanya pas kita presentasi.
+
+Bahasanya saya bikin sesantai mungkin biar kita semua yang baca langsung nyambung dan paham tanpa pusing istilah teknis.
+
+================================================================================
+1. SEBENARNYA APLIKASI KITA INI BIKIN APA DAN CARA KERJANYA GIMANA?
+================================================================================
+Intinya aplikasi TugasKu ini adalah "Buku Catatan & Asisten Pengingat Tugas" buat mahasiswa secara mandiri. Tujuannya biar kita gak bingung mau ngerjain tugas yang mana duluan pas tugas kuliah lagi numpuk.
+
+Alur pakainya simpel banget, cuma ada 4 langkah:
+1. Input Tugas:
+   Kita bisa ketik tugas satu per satu lewat formulir di web, atau kalau mau cepat bisa langsung upload file Excel/CSV satu semester.
+   Data yang dicatat: Kode Matkul, Nama Tugas, Tanggal Mulai, Tanggal Deadline, sama Tingkat Kesulitan (1 sampai 5).
+2. Sistem Langsung Ngitung Prioritas:
+   Begitu tugas disimpan, aplikasi langsung ngasih nilai skor (skala 20 sampai 100). Tugas yang paling mepet deadlinenya dan paling susah bakal otomatis naik ke paling atas.
+3. Tampilan Jadwal & Kalender:
+   Kita bisa lihat ringkasan status tugas di Dashboard (berapa yang belum, sedang dikerjakan, selesai, atau telat), dan ada Kalender visual yang nunjukin balok tanggal pengerjaan tugas dari mulai sampai deadline.
+4. Alarm Pengingat & Ubah Status:
+   Kalau tugas tinggal 3 hari lagi (H-3), besok (H-1), atau hari ini (Hari H), aplikasi bakal ngasih notifikasi pengingat. Kalau tugas sudah beres kita kerjain, tinggal klik tombol "Selesai", nanti tugasnya otomatis turun ke paling bawah dan pengingatnya mati.
+
+================================================================================
+2. CARA GAMPANG JELASIN RUMUS PRIORITAS (BIAR DOSEN LANGSUNG NGERTI)
+================================================================================
+Kalau dosen nanya: "Gimana cara web kalian nentuin tugas mana yang nomor satu?"
+Jawabnya: "Kita pakai metode matematika namanya SAW (penjumlahan berbobot). Rumusnya gampang dan transparan, bukan AI atau nebak-nebak."
+
+RUMUSNYA:
+Skor = (60% x Nilai Urgensi Waktu) + (40% x Nilai Tingkat Kesulitan)
+
+Kenapa rumusnya begini?
+- Urgensi Waktu (Porsi 60%):
+  Tenggat waktu itu paling genting, jadi bobotnya paling gede. Semakin mepet hari pengumpulan, nilainya makin tinggi (kelipatan 20):
+  * Masih lebih dari 14 hari = Nilai 20
+  * 8 sampai 14 hari = Nilai 40
+  * 4 sampai 7 hari = Nilai 60
+  * 2 sampai 3 hari (titik H-3) = Nilai 80
+  * 0 sampai 1 hari (H-1 dan Hari H) = Nilai 100
+  * Lewat deadline = Nilai 100 (dan dikasih label merah "Terlambat")
+
+- Tingkat Kesulitan (Porsi 40%):
+  Kesulitan kita isi dari angka 1 sampai 5, lalu sistem otomatis ubah ke nilai puluhan:
+  * 1 (Sangat Mudah) = 20
+  * 2 (Mudah) = 40
+  * 3 (Sedang) = 60
+  * 4 (Sulit) = 80
+  * 5 (Sangat Sulit) = 100
+
+CONTOH NYATA DARI APLIKASI TUGASKU (Sama persis dengan data di layar demo):
+• Tugas A: Proposal & Laporan Kemajuan Capstone
+  Deadline tinggal 2 hari (Urgensi = 80), Tingkat Kesulitan 4 (Kesulitan = 80).
+  o Skor = (0,6 x 80) + (0,4 x 80) = 48 + 32 = 80
+
+• Tugas B: Laporan Praktikum Basis Data
+  Terlambat 1 hari / Urgensi Maksimal (Urgensi = 100), Tingkat Kesulitan 2 (Kesulitan = 40).
+  o Skor = (0,6 x 100) + (0,4 x 40) = 60 + 16 = 76
+
+Hasilnya: Tugas A menempati urutan 1 (skor 80) dan Tugas B di urutan 2 (skor 76).
+Meskipun Tugas B urgensinya sudah mentok 100 karena terlambat, Tugas A tetap di urutan teratas karena kesulitannya jauh lebih tinggi (bintang 4 vs bintang 2).
+
+PEMBUKTIAN FITUR SERI (TIE-BREAKER) - SKOR SAMA-SAMA 76:
+• Tugas B: Laporan Praktikum Basis Data -> Skor = 76 (Deadline 12 Nov 2026, terlambat)
+• Tugas C: Proyek Pemrograman Berbasis Web -> Skor = 76 (Deadline 17 Nov 2026, 4 hari lagi: Urgensi 60, Kesulitan 100)
+  o Skor Tugas C = (0,6 x 60) + (0,4 x 100) = 36 + 40 = 76
+Hasilnya: Karena Tugas B dan Tugas C sama-sama bernilai 76, sistem otomatis melihat tanggal deadline. Tugas B yang deadlinenya lebih dulu (12 Nov) otomatis ditempatkan di atas Tugas C (17 Nov).
+
+PEMBUKTIAN SERI PADA SKOR SAMA-SAMA 64:
+• Tugas D: Kuis Pengantar Statistika (Deadline 15 Nov, Urgensi 80, Kesulitan 40 -> Skor 64)
+• Tugas E: Tugas Metadata Data Warehouse (Deadline 23 Nov, Urgensi 40, Kesulitan 100 -> Skor 64)
+Hasilnya: Sama-sama bernilai 64, Tugas D di atas Tugas E karena deadlinenya lebih dekat (15 Nov vs 23 Nov).
+
+================================================================================
+3. KENAPA APLIKASI KITA PAKAI localStorage DAN BUKAN DATABASE SERVER?
+================================================================================
+Kalau dosen nanya: "Kenapa datanya disimpan di browser (localStorage)? Kok gak bikin database MySQL di internet?"
+
+Jawabannya:
+1. Aplikasi Personal/Pribadi:
+   Aplikasi kita dari awal dirancang buat mahasiswa kelola tugasnya sendiri. Jadi gak butuh bikin akun atau login yang bikin ribet. Buka webnya di HP atau laptop, langsung detik itu juga siap pakai.
+2. Cepat Banget dan Gak Butuh Kuota Server:
+   Karena datanya disimpan di laptop/HP masing-masing, buka tutup halaman dan ngitung prioritasnya super kencang, gak ada loading lemot sama sekali.
+3. Data Gak Bakal Hilang:
+   Sudah saya buatin fitur Ekspor ke CSV sama Backup Data (.json). Kalau kita mau pindah laptop atau mau bersihin browser, tinggal download backupnya, lalu upload lagi di laptop baru. Beres!
+
+================================================================================
+4. RANGKUMAN FILE KODINGAN (BIAR GAK BINGUNG KALAU DILIHATIN KODE)
+================================================================================
+- src/lib/priority.js    -> Isinya rumus hitungan SAW tadi.
+- src/lib/validation.js  -> Isinya pengecekan: nama tugas gak boleh kosong, deadline gak boleh sebelum tanggal mulai, dll.
+- src/lib/csv.js         -> Program buat ngebaca file CSV pas kita upload.
+- src/lib/reminders.js   -> Pengatur alarm pengingat H-3, H-1, dan hari H.
+- src/store/taskStore.js -> Tempat nyimpen semua data tugas ke memori browser (localStorage).
+- src/pages/             -> Halaman webnya (Dashboard, Kalender, sama Cetak Rekap Tugas).
+
+================================================================================
+5. CONTEKAN BAHAN SLIDE PPT & KATA-KATA PAS PRESENTASI
+================================================================================
+Tinggal copas poin-poin di bawah ini ke Canva atau PowerPoint kalian, terus baca skrip bicaranya pas latihan:
+
+--------------------------------------------------------------------------------
+SLIDE 1: Alur Kerja Aplikasi TugasKu
+Poin di Slide:
+- Input Tugas: Ketik manual lewat form atau impor file CSV sekaligus.
+- Validasi Data: Sistem ngecek kelengkapan data & cegah tanggal deadline terbalik.
+- Perhitungan Otomatis: Skor prioritas langsung keluar saat tugas disimpan.
+- Dashboard & Kalender: Daftar tugas terurut otomatis, ringkasan progres, dan jadwal kalender visual.
+- Pengingat & Update: Notifikasi muncul di H-3, H-1, dan hari H; status bisa diubah ke Selesai kapan saja.
+
+Kata-kata saat ngomong di depan dosen:
+"Selamat pagi/siang Bapak/Ibu dosen penguji. Di slide ini saya mau jelasin alur aplikasi TugasKu dari sudut pandang mahasiswa.
+Alurnya sangat simpel:
+Pertama, mahasiswa masukin data tugas kuliahnya, bisa lewat form biasa atau upload file CSV kalau punya daftar tugas satu semester.
+Kedua, sistem otomatis ngecek datanya biar gak ada yang salah isi, misalnya tanggal deadline gak boleh lebih dulu dari tanggal mulai.
+Ketiga, sistem langsung ngitung tingkat urgensi dan kesulitan tugas tersebut secara otomatis.
+Keempat, tugas langsung tampil berurutan rapi di Dashboard dan Kalender, lengkap dengan alarm pengingat di H-3, H-1, dan hari H.
+Terakhir, kalau tugasnya udah beres kita kerjain, tinggal klik Selesai, nanti tugasnya langsung turun ke bawah dan progres belajar kita terupdate."
+
+--------------------------------------------------------------------------------
+SLIDE 2: Cara Kerja Logika Prioritas
+Poin di Slide:
+- Metode: Simple Additive Weighting (SAW) / Penjumlahan Berbobot.
+- Rumus: Skor = (60% x Urgensi Waktu) + (40% x Tingkat Kesulitan).
+- Rentang Nilai: 20 sampai 100 poin.
+- Transparan: Setiap kartu tugas nampilin detail hitungan nilai Urgensi (U) dan Kesulitan (K).
+- Aturan Seri: Kalau nilai skornya sama, tugas yang deadlinenya lebih dekat otomatis ditaruh di atas.
+
+Kata-kata saat ngomong di depan dosen:
+"Banyak mahasiswa sering bingung milih tugas mana yang harus dikerjain duluan. Kalau cuma lihat deadline, tugas susah sering terlambat dicicil. Tapi kalau pilih tugas yang gampang doang, tugas yang mepet malah kelewat.
+Makanya di aplikasi TugasKu ini, kita pakai rumus penjumlahan berbobot atau SAW:
+60 persen diambil dari Urgensi sisa hari deadline, dan 40 persen diambil dari Tingkat Kesulitan tugas.
+Skor urgensi kita bagi jadi 5 tingkat kelipatan 20, dan tingkat kesulitan 1 sampai 5 kita ubah jadi skala 20 sampai 100.
+Keunggulan rumus ini adalah sangat transparan dan bisa dihitung ulang secara manual. Di setiap kartu tugas mahasiswa bisa lihat nilai rinciannya, jadi mereka paham kenapa tugas itu harus didahulukan."
+
+--------------------------------------------------------------------------------
+SLIDE 3: Arsitektur Sistem & localStorage
+Poin di Slide:
+- Client-Side Application: Berjalan langsung di browser pengguna (React 18 + Tailwind CSS).
+- Penyimpanan: Menggunakan localStorage bawaan browser.
+- Keunggulan: Bebas registrasi/login, respon cepat tanpa loading server, dan hemat biaya.
+- Cadangan Data: Dilengkapi fitur Ekspor CSV dan Backup JSON buat pindah perangkat.
+
+Kata-kata saat ngomong di depan dosen:
+"Aplikasi TugasKu ini kita bangun sebagai web client-side yang memanfaatkan penyimpanan lokal peramban atau localStorage.
+Kenapa kita pilih cara ini?
+Pertama, karena aplikasi ini memang ditujukan buat asisten tugas pribadi masing-masing mahasiswa. Jadi mahasiswa gak perlu repot bikin akun atau login lagi, buka linknya langsung bisa dipakai detik itu juga.
+Kedua, karena gak bergantung sama server database di luar, aplikasinya sangat cepat dan tetap bisa dipakai walau koneksi internet lagi kurang stabil.
+Untuk antisipasi kalau mahasiswa mau ganti laptop atau bersihin history browser, kita udah sediain tombol Ekspor CSV dan Backup JSON, jadi datanya tetap aman dan bisa dipulihkan kapan saja."
+
+--------------------------------------------------------------------------------
+SLIDE 4: Hasil Pengujian (14 Skenario Black-Box)
+Poin di Slide:
+- Metode Uji: Black-Box Testing (14 Skenario Tabel 3.4 di Tugas 2) + 102 Unit Test Otomatis.
+- Hasil Pengujian:
+  1. Input, Edit, Hapus Tugas -> Berhasil
+  2. Validasi Tanggal Terbalik & Kolom Kosong -> Berhasil
+  3. Impor File CSV & Penolakan Data Rusak -> Berhasil
+  4. Perhitungan Skor Prioritas Sesuai Rumus -> Berhasil
+  5. Tampilan Kalender Rentang Tanggal -> Berhasil
+  6. Pengingat H-3, H-1, Hari H Tanpa Duplikasi -> Berhasil
+  7. Perubahan Status Progres Selesai -> Berhasil
+- Tingkat Keberhasilan: 14 dari 14 Skenario Berhasil (100% Sesuai Rencana).
+
+Kata-kata saat ngomong di depan dosen:
+"Sebelum kita presentasikan, seluruh fitur aplikasi sudah kita uji menggunakan metode Black-Box Testing berdasarkan 14 skenario yang ada di dokumen laporan Tugas 2, plus 102 automated unit test.
+Semua skenario, mulai dari input tugas, penolakan baris CSV yang salah isi, ketepatan rumus prioritas, kalender, sampai alarm pengingat H-3, H-1, dan hari H, semuanya sudah kita coba dan hasilnya 100 persen berhasil sesuai yang direncanakan.
+Aplikasi terbukti stabil dan siap dipakai mahasiswa sehari-hari."
+
+================================================================================
+6. CONTEKAN JAWABAN CEPAT KALAU DOSEN NANYA (ANTI BINGUNG)
+================================================================================
+1. Tanya: "Kenapa gak pakai AI atau Machine Learning aja buat nentuin prioritas?"
+   Jawab:
+   "Karena buat tugas harian mahasiswa, yang paling penting itu kepastian dan alasan yang jelas. Kalau pakai rumus berbobot ini, mahasiswa tahu pasti kenapa tugas A nomor satu dan tugas B nomor dua. Kalau pakai AI sifatnya tertutup (black-box), susah dijelaskan ke mahasiswa, dan butuh data riwayat yang sangat banyak yang belum tentu dimiliki mahasiswa baru."
+
+2. Tanya: "Kalau mahasiswanya gak buka web pas H-3 gimana? Notifikasinya hangus?"
+   Jawab:
+   "Gak hangus Bu/Pak. Logika kodenya sudah kita buat aman: sisa waktu 2 sampai 3 hari masuk ke tahap H-3. Jadi kalau mahasiswa baru sempat buka aplikasi di H-2, sistem bakal tahu kalau alarm H-3 belum pernah diliat, dan bakal langsung dimunculin di daftar notifikasi."
+
+3. Tanya: "Gimana kalau ada dua tugas yang deadlinenya sama persis dan tingkat kesulitannya juga sama?"
+   Jawab:
+   "Sistem kita punya aturan penentu seri: pertama dilihat skor prioritasnya, kalau sama dilihat mana deadline yang paling mepet, kalau deadlinenya sama juga dilihat tingkat kesulitannya, dan kalau semuanya masih sama persis, sistem bakal urutin secara rapi berdasarkan abjad nama tugasnya."
+
+================================================================================
+7. CATATAN KOREKSI & PERBAIKAN POSTER CAPSTONE PROJECT (BUAT TIM KELOMPOK C)
+================================================================================
+Teman-teman, desain poster yang kemarin dibuat sebenarnya sudah keren banget secara visual (warna hijau-putihnya rapi dan pas). Tapi sebelum dicetak atau dikumpulkan ke dosen pembimbing, tolong beberapa poin salah ketik dan ketidaksesuaian ini direvisi dulu ya biar nilai kita aman:
+
+1. KOREKSI SALAH KETIK (TYPO) PADA TEKS:
+   - Di kotak "Latar Belakang":
+     * Salah: "Tanga pengelolaan yang balk..." -> UBAH JADI: "Tanpa pengelolaan yang baik..."
+     * Salah: "...bahhan terlewat. Oleh kerana itu..." -> UBAH JADI: "...bahkan terlewat. Oleh karena itu..."
+   - Di kotak "Tujuan":
+     * Salah: "...yang praktis dan efision." -> UBAH JADI: "...yang praktis dan efisien."
+
+2. KOREKSI NAMA & NIM ANGGOTA KELOMPOK (Bagian Bawah Kiri):
+   Tolong dicocokkan lagi persis sama cover Laporan Tugas 2 kita:
+   - No 1: Tertulis "Ulikts Mutawafina" -> UBAH JADI: Ulikta Mutawafina (051517222)
+   - No 2: Tertulis "Hanife Saqile Fazrin" -> UBAH JADI: Hanifa Saqila Fazrin (051539203)
+   - No 3: Thomas Reinhard Abraham Sutasuma (051650379)
+   - No 4: Tertulis NIM "(091377341)" -> UBAH JADI: Mochammad Ridwan (051377241)
+   - No 5: Tertulis "Akhdarh Wijeya Kusuma" -> UBAH JADI: Akhdarh Wijaya Kusuma (050263657)
+
+3. KOREKSI GAMBAR LAYAR LAPTOP & HP (MOCKUP):
+   - Layar laptop dan HP di poster saat ini masih pakai gambar template (ada tombol "Login", padahal web kita kan tanpa akun/tanpa login, dan kalendernya tertulis tahun 2021).
+   - Saran: Ganti isi layar laptopnya pakai Screenshot ASLI dari web TugasKu kita (bisa capture halaman Dashboard yang ada kartu ringkasan tugas dan daftar tugas riilnya). Ini bakal bikin dosen jauh lebih percaya dan kagum karena produknya benar-benar ada.
+
+4. PENYEMPURNAAN KATA DI "TUJUAN" & "FITUR UTAMA":
+   - Di kotak "Tujuan" poin 2:
+     Tambahkan nama metodenya biar lebih ilmiah:
+     "Mengimplementasikan fitur kalkulasi prioritas tugas berdasarkan deadline dan tingkat kesulitan menggunakan metode Simple Additive Weighting (SAW)."
+   - Di kotak "Fitur Utama":
+     Ikon "Akses Multi Perangkat" sebaiknya diganti jadi: "Ekspor & Impor CSV" atau "Cetak Rekap Jadwal" (karena aplikasi kita memakai penyimpanan lokal browser / localStorage).
+
+5. TABEL ACUAN TEKNOLOGI RESMI (Bisa dicek juga di GitHub kita):
+   - Frontend UI: React 18, Tailwind CSS (Bersih & Responsif)
+   - Build Tool: Vite 5 (Super Cepat)
+   - State & Storage: Zustand + localStorage Browser (Tanpa Server Database)
+   - Kalender: FullCalendar v6 (Rentang Waktu Visual)
+   - Logika Prioritas: Simple Additive Weighting / SAW (P = 0,6 Urgensi + 0,4 Kesulitan)
+   - Pengujian: Vitest (102 Automated Unit Tests - 100% Lulus)
+   - Deployment Online: GitHub Pages & GitHub Actions (CI/CD Otomatis)
+
+
